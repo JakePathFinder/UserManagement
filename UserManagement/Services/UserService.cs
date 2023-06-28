@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using UserManagement.DTO;
+using UserManagement.Model;
 using UserManagement.Repos.Interfaces;
 using UserManagement.Services.Interfaces;
 
@@ -9,7 +10,7 @@ namespace UserManagement.Services
     {
         private readonly ISecurityService _securityService;
 
-        public UserService(IUserRepo userRepo, IMapper mapper, ILogger<UserService> logger, ISecurityService securityService) : base(userRepo, mapper, logger)
+        public UserService(IEntityRepo<User> userRepo, IMapper mapper, ILogger<UserService> logger, ISecurityService securityService) : base(userRepo, mapper, logger)
         {
             _securityService = securityService;
         }
