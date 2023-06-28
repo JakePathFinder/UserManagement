@@ -16,36 +16,29 @@ public class EntityBaseController<TCreateRequestDTO, TResponseDTO> : ControllerB
         _service = service;
     }
     
-    [HttpGet(nameof(GetByIdAsync))]
-    public virtual async Task<TResponseDTO> GetByIdAsync(Guid id)
+    [HttpGet]
+    public virtual async Task<TResponseDTO> GetByIdAsync([FromQuery] Guid id)
     {
         var result = await _service.GetByIdAsync(id);
         return result;
     }
     
-    [HttpGet(nameof(GetAllAsync))]
-    public virtual async Task<IEnumerable<TResponseDTO>> GetAllAsync()
-    {
-        var result = await _service.GetAllAsync();
-        return result;
-    }
-    
-    [HttpPost(nameof(CreateAsync))]
-    public virtual async Task<TResponseDTO> CreateAsync(TCreateRequestDTO entity)
+    [HttpPost]
+    public virtual async Task<TResponseDTO> CreateAsync([FromBody] TCreateRequestDTO entity)
     {
         var result = await _service.CreateAsync(entity);
         return result;
     }
     
-    [HttpPut(nameof(UpdateAsync))]
-    public virtual async Task<IActionResult> UpdateAsync(TCreateRequestDTO entity)
+    [HttpPut]
+    public virtual async Task<IActionResult> UpdateAsync([FromQuery] Guid id, [FromBody] TCreateRequestDTO entity)
     {
-        var result = await _service.UpdateAsync(entity);
+        var result = await _service.UpdateAsync(id, entity);
         return result ? Ok($"Updated Successfully") : BadRequest($"Failed Updating");
     }
 
-    [HttpDelete(nameof(DeleteByIdAsync))]
-    public virtual async Task<IActionResult> DeleteByIdAsync(Guid id)
+    [HttpDelete]
+    public virtual async Task<IActionResult> DeleteByIdAsync([FromQuery] Guid id)
     {
         var result = await _service.DeleteByIdAsync(id);
         return result ? Ok($"{id} Deleted Successfully") : BadRequest($"Failed Deleting {id}");

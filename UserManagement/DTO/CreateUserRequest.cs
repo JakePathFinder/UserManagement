@@ -1,12 +1,11 @@
 ﻿using System.ComponentModel.DataAnnotations;
-using Microsoft.Extensions.FileSystemGlobbing.Internal.Patterns;
 using UserManagement.Const;
 
 namespace UserManagement.DTO
 {
     public class CreateUserRequest
     {
-        public Guid Id { get; init; }
+        public Guid Id { get; set; }
         
         [StringLength(ValidationConstants.InputStringLength, ErrorMessage = ValidationConstants.InputStringLengthErrorMessage)]
         [RegularExpression(ValidationConstants.NameValidationRegex, ErrorMessage = ValidationConstants.NameInputStringErrorMessage)]
@@ -25,6 +24,6 @@ namespace UserManagement.DTO
         public required string Email { get; set; }
 
         [StringLength(ValidationConstants.InputStringLength, ErrorMessage = ValidationConstants.InputStringLengthErrorMessage)]
-        public required string Password { get; init; }
+        public required string Password { get; set; }
     }
 }

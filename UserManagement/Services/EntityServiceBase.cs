@@ -5,7 +5,7 @@ using UserManagement.Services.Interfaces;
 
 namespace UserManagement.Services
 {
-    public abstract class EntityServiceBase<TCreateRequestDTO, TResponseDTO, TModel> : IEntityService<TCreateRequestDTO, TResponseDTO>
+    public abstract class EntityServiceBase<TCreateRequestDTO, TResponseDTO, TModel> : IEntityService<TCreateRequestDTO, TResponseDTO> where TModel : IEntity
     {
         protected readonly IMapper Mapper;
         protected readonly IEntityRepo<TModel> Repo;
@@ -19,17 +19,9 @@ namespace UserManagement.Services
 
         public virtual async Task<TResponseDTO> GetByIdAsync(Guid id)
         {
-            _logger.LogInformation("Creating {entityType} By Id: {id}", typeof(TResponseDTO).Name,id);
+            _logger.LogInformation("Getting {entityType} By Id: {id}", typeof(TResponseDTO).Name,id);
             var result = await Repo.GetByIdAsync(id);
             var mapped = Mapper.Map<TResponseDTO>(result);
-            return mapped;
-        }
-
-        public virtual async Task<IList<TResponseDTO>> GetAllAsync()
-        {
-            _logger.LogInformation("Getting all {entityType} records", typeof(TResponseDTO).Name);
-            var results = await Repo.GetAllAsync();
-            var mapped = Mapper.Map<List<TResponseDTO>>(results);
             return mapped;
         }
 
@@ -41,11 +33,17 @@ namespace UserManagement.Services
             return mappedResponse;
         }
 
-        public virtual async Task<bool> UpdateAsync(TCreateRequestDTO entity)
+        public virtual async Task<bool> UpdateAsync(Guid id, TCreateRequestDTO entity)
         {
-            _logger.LogInformation("Updating {entityType}", typeof(TResponseDTO).Name);
+            _logger.LogInformation("Updating {entityType} with id {id}", typeof(TResponseDTO).Name, id);
+
             var mapped = Mapper.Map<TModel>(entity);
+            if (mapped.Id != id)
+            {
+                mapped.Id = id;
+            }
             var res = await Repo.UpdateAsync(mapped);
+
             return res;
         }
 
