@@ -12,13 +12,14 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
-
+   
 builder.Services.AddControllers();
 builder.Logging.ClearProviders();
 builder.Logging.AddConsole();
 
 builder.Services.Configure<AppConfig>(builder.Configuration.GetSection("AppConfiguration"));
 builder.Services.AddAutoMapper(typeof(Program));
+builder.Services.AddScoped<ISecurityService, SecurityService>();
 builder.Services.AddScoped<IUserRepo, UserRepo>();
 builder.Services.AddScoped<IEntityService<CreateUserRequest, UserResponse>, UserService>();
 var app = builder.Build();

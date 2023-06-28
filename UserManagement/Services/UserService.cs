@@ -1,12 +1,16 @@
 ﻿using AutoMapper;
 using UserManagement.Repos.Interfaces;
+using UserManagement.Services.Interfaces;
 
 namespace UserManagement.Services
 {
     public class UserService : EntityServiceBase<DTO.CreateUserRequest, DTO.UserResponse, Model.User>
     {
-        public UserService(IUserRepo userRepo, IMapper mapper): base(userRepo, mapper)
+        private readonly ISecurityService _securityService;
+
+        public UserService(IUserRepo userRepo, IMapper mapper, ISecurityService securityService) : base(userRepo, mapper)
         {
+            _securityService = securityService;
         }
     }
 }
