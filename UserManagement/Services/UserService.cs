@@ -8,7 +8,7 @@ namespace UserManagement.Services
     {
         private readonly ISecurityService _securityService;
 
-        public UserService(IUserRepo userRepo, IMapper mapper, ILogger<SecurityService> logger, ISecurityService securityService) : base(userRepo, mapper)
+        public UserService(IUserRepo userRepo, IMapper mapper, ILogger<UserService> logger, ISecurityService securityService) : base(userRepo, mapper, logger)
         {
             _securityService = securityService;
         }
