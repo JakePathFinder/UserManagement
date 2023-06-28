@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Logging;
 using UserManagement.Services.Interfaces;
 
 namespace UserManagement.Controllers;
@@ -7,45 +8,52 @@ namespace UserManagement.Controllers;
 [Route("[controller]")]
 public class EntityBaseController<TCreateRequestDTO, TResponseDTO> : ControllerBase
 {
-    protected readonly IEntityService<TCreateRequestDTO, TResponseDTO> _service;
+    protected readonly ILogger<EntityBaseController<TCreateRequestDTO, TResponseDTO>> Logger;
+    protected readonly IEntityService<TCreateRequestDTO, TResponseDTO> Service;
 
     public EntityBaseController(ILogger<EntityBaseController<TCreateRequestDTO, TResponseDTO>> logger, IEntityService<TCreateRequestDTO, TResponseDTO> service)
     {
-        _service = service;
+        Logger = logger;
+        Service = service;
     }
     
-    [HttpGet]
-    public virtual async Task<TResponseDTO> GetByIdAsync([FromQuery] Guid id)
+    [HttpGet($"{{{nameof(id)}}}")]
+    public virtual async Task<TResponseDTO> GetByIdAsync([FromRoute] Guid id)
     {
-        var result = await _service.GetByIdAsync(id);
+        Logger.LogInformation("{methodName} invoked with {id}", nameof(GetByIdAsync), id);
+        var result = await Service.GetByIdAsync(id);
         return result;
     }
     
-    [HttpGet]
+    [HttpGet()]
     public virtual async Task<IEnumerable<TResponseDTO>> GetAllAsync()
     {
-        var result = await _service.GetAllAsync();
+        Logger.LogInformation("{methodName} invoked", nameof(GetByIdAsync));
+        var result = await Service.GetAllAsync();
         return result;
     }
 	
 	[HttpPost]
     public virtual async Task<TResponseDTO> CreateAsync([FromBody] TCreateRequestDTO entity)
     {
-        var result = await _service.CreateAsync(entity);
+        Logger.LogInformation("{methodName} invoked", nameof(GetByIdAsync));
+        var result = await Service.CreateAsync(entity);
         return result;
     }
     
-    [HttpPut]
-    public virtual async Task<IActionResult> UpdateAsync([FromQuery] Guid id, [FromBody] TCreateRequestDTO entity)
+    [HttpPut($"{{{nameof(id)}}}")]
+    public virtual async Task<IActionResult> UpdateAsync([FromRoute] Guid id, [FromBody] TCreateRequestDTO entity)
     {
-        var result = await _service.UpdateAsync(id, entity);
+        Logger.LogInformation("{methodName} invoked with {id}", nameof(GetByIdAsync), id);
+        var result = await Service.UpdateAsync(id, entity);
         return result ? Ok("Updated Successfully") : BadRequest("Failed Updating");
     }
 
-    [HttpDelete]
-    public virtual async Task<IActionResult> DeleteByIdAsync([FromQuery] Guid id)
+    [HttpDelete($"{{{nameof(id)}}}")]
+    public virtual async Task<IActionResult> DeleteByIdAsync([FromRoute] Guid id)
     {
-        var result = await _service.DeleteByIdAsync(id);
+        Logger.LogInformation("{methodName} invoked with {id}", nameof(GetByIdAsync), id);
+        var result = await Service.DeleteByIdAsync(id);
         return result ? Ok($"{id} Deleted Successfully") : BadRequest($"Failed Deleting {id}");
     }
 }

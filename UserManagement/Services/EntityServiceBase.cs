@@ -19,7 +19,6 @@ namespace UserManagement.Services
 
         public virtual async Task<TResponseDTO> GetByIdAsync(Guid id)
         {
-            Logger.LogInformation("Getting {entityType} By Id: {id}", typeof(TResponseDTO).Name,id);
             var result = await Repo.GetByIdAsync(id);
             var mapped = Mapper.Map<TResponseDTO>(result);
             return mapped;
@@ -33,7 +32,6 @@ namespace UserManagement.Services
         }
 		
         public virtual async Task<TResponseDTO> CreateAsync(TCreateRequestDTO entity) {
-            Logger.LogInformation("Creating a new {entityType}", typeof(TResponseDTO).Name);
             var mapped = Mapper.Map<TModel>(entity);
             var result = await Repo.CreateAsync(mapped);
             var mappedResponse = Mapper.Map<TResponseDTO>(result);
@@ -42,8 +40,6 @@ namespace UserManagement.Services
 
         public virtual async Task<bool> UpdateAsync(Guid id, TCreateRequestDTO entity)
         {
-            Logger.LogInformation("Updating {entityType} with id {id}", typeof(TResponseDTO).Name, id);
-
             var mapped = Mapper.Map<TModel>(entity);
             if (mapped.Id != id)
             {
@@ -56,7 +52,6 @@ namespace UserManagement.Services
 
         public virtual async Task<bool> DeleteByIdAsync(Guid id)
         {
-            Logger.LogInformation("Deleting {entityType} with Id {id}", typeof(TResponseDTO).Name, id);
             var res = await Repo.DeleteByIdAsync(id);
             return res;
         }
