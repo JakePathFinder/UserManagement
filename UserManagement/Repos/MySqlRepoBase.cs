@@ -34,9 +34,9 @@ namespace UserManagement.Repos
                 var created = await connection.GetAsync<T>(entity.Id);
                 return created;
             }
-            catch (Exception ex)
+            catch (Exception e)
             {
-                Logger.LogError("Failed to Create",ex);
+                Logger.LogError("Failed to Create: {err}", e);
                 throw;
             }
         }
@@ -51,9 +51,9 @@ namespace UserManagement.Repos
                 var isSuccessful = await connection.UpdateAsync(entityToUpdate: entity);
                 return isSuccessful;
             }
-            catch (Exception ex)
+            catch (Exception e)
             {
-                Logger.LogError("Failed to Update", ex);
+                Logger.LogError("Failed to Update: {err}", e);
                 throw;
             }
         }
@@ -68,9 +68,25 @@ namespace UserManagement.Repos
                 var isSuccessful = (rowsAffected > 0);
                 return isSuccessful;
             }
-            catch (Exception ex)
+            catch (Exception e)
             {
-                Logger.LogError("Failed to delete by Id",ex);
+                Logger.LogError("Failed to delete by Id: {err}", e);
+                throw;
+            }
+        }
+
+        public virtual async Task<IList<T>> GetAllAsync()
+        {
+            try 
+            {
+                await using var connection = new MySqlConnection(ConnectionString);
+                await connection.OpenAsync();
+                var results = await connection.GetAllAsync<T>();
+                return results.ToList();
+            }
+            catch (Exception e)
+            {
+                Logger.LogError("Failed to get all: {err}", e);
                 throw;
             }
         }
@@ -84,9 +100,9 @@ namespace UserManagement.Repos
                 var result = await connection.GetAsync<T>(id);
                 return result;
             }
-            catch (Exception ex)
+            catch (Exception e)
             {
-                Logger.LogError("Failed to get by Id",ex);
+                Logger.LogError("Failed to get by Id : {err}", e);
                 throw;
             }
         }
