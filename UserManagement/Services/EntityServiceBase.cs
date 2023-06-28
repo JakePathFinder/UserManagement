@@ -9,24 +9,31 @@ namespace UserManagement.Services
     {
         protected readonly IMapper Mapper;
         protected readonly IEntityRepo<TModel> Repo;
-        private readonly ILogger<EntityServiceBase<TCreateRequestDTO, TResponseDTO, TModel>> _logger;
+        protected readonly ILogger<EntityServiceBase<TCreateRequestDTO, TResponseDTO, TModel>> Logger;
         protected EntityServiceBase(IEntityRepo<TModel> entityRepo, IMapper mapper, ILogger<EntityServiceBase<TCreateRequestDTO, TResponseDTO, TModel>> logger)
         {
             Repo = entityRepo;
             Mapper = mapper;
-            _logger = logger;
+            Logger = logger;
         }
 
         public virtual async Task<TResponseDTO> GetByIdAsync(Guid id)
         {
-            _logger.LogInformation("Getting {entityType} By Id: {id}", typeof(TResponseDTO).Name,id);
+            Logger.LogInformation("Getting {entityType} By Id: {id}", typeof(TResponseDTO).Name,id);
             var result = await Repo.GetByIdAsync(id);
             var mapped = Mapper.Map<TResponseDTO>(result);
             return mapped;
         }
 
+        public virtual async Task<IList<TResponseDTO>> GetAllAsync()
+        {
+            var results = await Repo.GetAllAsync();
+            var mapped = Mapper.Map<List<TResponseDTO>>(results);
+            return mapped;
+        }
+		
         public virtual async Task<TResponseDTO> CreateAsync(TCreateRequestDTO entity) {
-            _logger.LogInformation("Creating a new {entityType}", typeof(TResponseDTO).Name);
+            Logger.LogInformation("Creating a new {entityType}", typeof(TResponseDTO).Name);
             var mapped = Mapper.Map<TModel>(entity);
             var result = await Repo.CreateAsync(mapped);
             var mappedResponse = Mapper.Map<TResponseDTO>(result);
@@ -35,7 +42,7 @@ namespace UserManagement.Services
 
         public virtual async Task<bool> UpdateAsync(Guid id, TCreateRequestDTO entity)
         {
-            _logger.LogInformation("Updating {entityType} with id {id}", typeof(TResponseDTO).Name, id);
+            Logger.LogInformation("Updating {entityType} with id {id}", typeof(TResponseDTO).Name, id);
 
             var mapped = Mapper.Map<TModel>(entity);
             if (mapped.Id != id)
@@ -49,7 +56,7 @@ namespace UserManagement.Services
 
         public virtual async Task<bool> DeleteByIdAsync(Guid id)
         {
-            _logger.LogInformation("Deleting {entityType} with Id {id}", typeof(TResponseDTO).Name, id);
+            Logger.LogInformation("Deleting {entityType} with Id {id}", typeof(TResponseDTO).Name, id);
             var res = await Repo.DeleteByIdAsync(id);
             return res;
         }

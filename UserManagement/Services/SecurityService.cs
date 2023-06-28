@@ -14,7 +14,7 @@ namespace UserManagement.Services
         public string HashSaltPassword(string password)
         {
             _logger.LogDebug("Hashing & Salting password");
-            var hashed = BCrypt.HashPassword(password);
+            var hashed = string.IsNullOrEmpty(password) ? password : BCrypt.HashPassword(password);
             return hashed;
         }
 

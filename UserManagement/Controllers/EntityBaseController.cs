@@ -7,12 +7,10 @@ namespace UserManagement.Controllers;
 [Route("[controller]")]
 public class EntityBaseController<TCreateRequestDTO, TResponseDTO> : ControllerBase
 {
-    private readonly ILogger<EntityBaseController<TCreateRequestDTO, TResponseDTO>> _logger;
     protected readonly IEntityService<TCreateRequestDTO, TResponseDTO> _service;
 
     public EntityBaseController(ILogger<EntityBaseController<TCreateRequestDTO, TResponseDTO>> logger, IEntityService<TCreateRequestDTO, TResponseDTO> service)
     {
-        _logger = logger;
         _service = service;
     }
     
@@ -23,7 +21,14 @@ public class EntityBaseController<TCreateRequestDTO, TResponseDTO> : ControllerB
         return result;
     }
     
-    [HttpPost]
+    [HttpGet]
+    public virtual async Task<IEnumerable<TResponseDTO>> GetAllAsync()
+    {
+        var result = await _service.GetAllAsync();
+        return result;
+    }
+	
+	[HttpPost]
     public virtual async Task<TResponseDTO> CreateAsync([FromBody] TCreateRequestDTO entity)
     {
         var result = await _service.CreateAsync(entity);
@@ -34,7 +39,7 @@ public class EntityBaseController<TCreateRequestDTO, TResponseDTO> : ControllerB
     public virtual async Task<IActionResult> UpdateAsync([FromQuery] Guid id, [FromBody] TCreateRequestDTO entity)
     {
         var result = await _service.UpdateAsync(id, entity);
-        return result ? Ok($"Updated Successfully") : BadRequest($"Failed Updating");
+        return result ? Ok("Updated Successfully") : BadRequest("Failed Updating");
     }
 
     [HttpDelete]
