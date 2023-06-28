@@ -1,5 +1,4 @@
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Logging;
 using UserManagement.Services.Interfaces;
 
 namespace UserManagement.Controllers;
