@@ -1,0 +1,25 @@
+version: '3.4'
+
+services:
+  usermanagement:
+    image: ${DOCKER_REGISTRY-}usermanagement
+    build:
+      context: .
+      dockerfile: UserManagement/Dockerfile
+    environment:
+      AppSettings__ConnectionStrings__Db: "Server=mysqlserver;Port=3306;Database=akafood_db;Uid=akafood_main;Pwd=4K4_F@@ds_pWd"
+    depends_on:
+      - mysqlserver
+
+  mysqlserver:
+    image: mysql:latest
+    volumes:
+      - mysql_data:/var/lib/mysql
+    environment:
+      MYSQL_ROOT_PASSWORD: My_4k4_R00t_pwd
+      MYSQL_DATABASE: akafood_db
+      MYSQL_USER: akafood_main
+      MYSQL_PASSWORD: 4K4_F@@ds_pWd
+
+volumes:
+  mysql_data:
