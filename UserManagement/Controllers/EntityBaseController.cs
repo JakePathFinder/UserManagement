@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.Mvc;
+using Swashbuckle.AspNetCore.Annotations;
 using UserManagement.Services.Interfaces;
 
 namespace UserManagement.Controllers;
@@ -17,6 +18,7 @@ public class EntityBaseController<TCreateRequestDTO, TResponseDTO> : ControllerB
     }
     
     [HttpGet($"{{{nameof(id)}}}")]
+    [SwaggerOperation(Summary = "Retrieves an item by id")]
     public virtual async Task<TResponseDTO> GetByIdAsync([FromRoute] Guid id)
     {
         Logger.LogInformation("{methodName} invoked with {id}", nameof(GetByIdAsync), id);
@@ -24,7 +26,8 @@ public class EntityBaseController<TCreateRequestDTO, TResponseDTO> : ControllerB
         return result;
     }
     
-    [HttpGet()]
+    [HttpGet]
+    [SwaggerOperation(Summary = "Retrieves all items")]
     public virtual async Task<IEnumerable<TResponseDTO>> GetAllAsync()
     {
         Logger.LogInformation("{methodName} invoked", nameof(GetByIdAsync));
@@ -33,6 +36,7 @@ public class EntityBaseController<TCreateRequestDTO, TResponseDTO> : ControllerB
     }
 	
 	[HttpPost]
+    [SwaggerOperation(Summary = "Creates a new item")]
     public virtual async Task<TResponseDTO> CreateAsync([FromBody] TCreateRequestDTO entity)
     {
         Logger.LogInformation("{methodName} invoked", nameof(GetByIdAsync));
@@ -41,6 +45,7 @@ public class EntityBaseController<TCreateRequestDTO, TResponseDTO> : ControllerB
     }
     
     [HttpPut($"{{{nameof(id)}}}")]
+    [SwaggerOperation(Summary = "Updates an existing item")]
     public virtual async Task<IActionResult> UpdateAsync([FromRoute] Guid id, [FromBody] TCreateRequestDTO entity)
     {
         Logger.LogInformation("{methodName} invoked with {id}", nameof(GetByIdAsync), id);
@@ -49,6 +54,7 @@ public class EntityBaseController<TCreateRequestDTO, TResponseDTO> : ControllerB
     }
 
     [HttpDelete($"{{{nameof(id)}}}")]
+    [SwaggerOperation(Summary = "Deletes an item")]
     public virtual async Task<IActionResult> DeleteByIdAsync([FromRoute] Guid id)
     {
         Logger.LogInformation("{methodName} invoked with {id}", nameof(GetByIdAsync), id);

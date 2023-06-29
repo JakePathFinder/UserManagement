@@ -19,7 +19,7 @@ namespace UserManagement.Repos
         protected MySqlRepoBase(IOptionsSnapshot<AppConfig> cfg, ILogger<MySqlRepoBase<T>> logger)
         {
             ConnectionString = cfg.Value.ConnectionStrings.Db;
-            var tableName = MySqlRepoBase<T>.ExtractTableName();
+            var tableName = ExtractTableName();
             _deleteQuery = $"DELETE FROM {tableName} WHERE Id = @Id";
             Logger = logger;
         }
