@@ -19,6 +19,7 @@ services:
       - "33060:33060"
     volumes:
       - aka_foods_mysql_volume:/var/lib/mysql
+      - ./UserManagement/Scripts/CreateMySqlDB.sql.txt:/docker-entrypoint-initdb.d/init_db_script.sql
     environment:
       MYSQL_ROOT_PASSWORD: My_4k4_R00t_pwd
       MYSQL_DATABASE: akafoods_db
