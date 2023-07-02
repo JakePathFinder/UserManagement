@@ -8,6 +8,11 @@ namespace UserManagement.Utilities
     {
         public static IEnumerable<IEnumerable<T>> BatchReadCsv<T>(string path, int batchSize = ServiceConstants.BulkOperationsBatchSize)
         {
+            if (string.IsNullOrWhiteSpace(path) || !File.Exists(path))
+            {
+                throw new ArgumentException($"File {path} does not exist");
+            }
+
             using var reader = new StreamReader(path);
             using var csv = new CsvReader(reader, CultureInfo.InvariantCulture);
             while (csv.Read())
