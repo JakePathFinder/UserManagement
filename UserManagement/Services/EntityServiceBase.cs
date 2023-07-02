@@ -4,7 +4,7 @@ using UserManagement.DTO;
 using UserManagement.Repos.Interfaces;
 using UserManagement.Services.Interfaces;
 using UserManagement.Utilities;
-using static Dapper.SqlMapper;
+
 
 namespace UserManagement.Services
 {
