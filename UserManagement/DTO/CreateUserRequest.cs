@@ -9,21 +9,19 @@ namespace UserManagement.DTO
         
         [StringLength(ValidationConstants.InputStringLength, ErrorMessage = ValidationConstants.InputStringLengthErrorMessage)]
         [RegularExpression(ValidationConstants.NameValidationRegex, ErrorMessage = ValidationConstants.NameInputStringErrorMessage)]
-        public required string FirstName { get; set; }
+        public string? FirstName { get; set; }
 
         [StringLength(ValidationConstants.InputStringLength, ErrorMessage = ValidationConstants.InputStringLengthErrorMessage)]
         [RegularExpression(ValidationConstants.NameValidationRegex, ErrorMessage = ValidationConstants.NameInputStringErrorMessage)]
-        public required string LastName { get; set; }
+        public string? LastName { get; set; }
 
-        [Required(AllowEmptyStrings = false)]
         [RegularExpression(ValidationConstants.PhoneNumberRegex, ErrorMessage = ValidationConstants.InvalidPhoneNumberErrorMessage)]
-        public required string PhoneNumber { get; set; }
+        public string? PhoneNumber { get; set; }
 
-        [Required(AllowEmptyStrings = false)]
         [RegularExpression(ValidationConstants.EmailValidationRegex, ErrorMessage = ValidationConstants.InvalidEmailErrorMessage)]
-        public required string Email { get; set; }
+        public string? Email { get; set; }
 
         [StringLength(ValidationConstants.InputStringLength, ErrorMessage = ValidationConstants.InputStringLengthErrorMessage)]
-        public required string Password { get; set; }
+        public string? Password { get; set; }
     }
 }

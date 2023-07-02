@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using UserManagement.DTO;
+using UserManagement.Model;
 using UserManagement.Repos.Interfaces;
 using UserManagement.Services.Interfaces;
 using UserManagement.Utilities;
@@ -10,6 +11,7 @@ namespace UserManagement.Services
     public abstract class EntityServiceBase<TCreateRequestDTO, TResponseDTO, TModel> : IEntityService<TCreateRequestDTO, TResponseDTO> 
         where  TCreateRequestDTO : class, IIdEntityDto
         where TResponseDTO : class, IIdEntityDto
+        where TModel : class, IEntity
     {
         protected readonly IMapper Mapper;
         protected readonly IEntityRepo<TModel> Repo;
@@ -77,9 +79,17 @@ namespace UserManagement.Services
         {
             try
             {
-                var mapped = Mapper.Map<TModel>(entity);
-                var result = await Repo.UpdateAsync(mapped);
-                return Response<TResponseDTO>.From(result, $"Updated {entity.Id} successfully");
+                var merged = await Repo.GetByIdAsync(entity.Id);
+                var newEntity = Mapper.Map<TModel>(entity);
+                MergeBeforeUpdate(existingEntity: merged, newEntity: newEntity);
+                var result = await Repo.UpdateAsync(merged);
+                if (result)
+                {
+                    var mappedResult = Mapper.Map<TResponseDTO>(merged);
+                    return Response<TResponseDTO>.From(mappedResult, $"Updated {entity.Id} successfully");
+                }
+                
+                throw new Exception($"Update response for {entity.Id} was False");
             }
             catch (Exception ex)
             {
@@ -141,6 +151,30 @@ namespace UserManagement.Services
             };
 
             return operation;
+        }
+
+        public void MergeBeforeUpdate(TModel existingEntity, TModel newEntity)
+        {
+            var type = typeof(TModel);
+
+            foreach (var newProperty in type.GetProperties())
+            {
+                if (!newProperty.CanRead || newProperty.Name == nameof(newEntity.Id))
+                {
+                    continue;
+                }
+
+                var existingProperty = type.GetProperty(newProperty.Name);
+                if (existingProperty == null || !existingProperty.CanWrite)
+                {
+                    continue;
+                }
+
+                var sourceValue = newProperty.GetValue(newEntity);
+                if (sourceValue == null) continue;
+
+                existingProperty.SetValue(existingEntity, sourceValue);
+            }
         }
 
     }
