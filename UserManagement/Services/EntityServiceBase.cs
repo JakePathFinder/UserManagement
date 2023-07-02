@@ -115,14 +115,14 @@ namespace UserManagement.Services
             }
         }
 
-        public async Task<BulkOperationResponse<TResponseDTO>> Bulk(BulkOperationRequest bulkOperationRequest)
+        public async Task<BulkOperationResponse<TResponseDTO>> Bulk(OperationType operationType, IFormFile file)
         {
             var responses = new List<Response<TResponseDTO>>();
             
             try
             {
-                var api = GetMatchingApi(bulkOperationRequest.OperationType);
-                var entityBatches = FileHelper.BatchReadCsv<TCreateRequestDTO>(bulkOperationRequest.InputFile);
+                var api = GetMatchingApi(operationType);
+                var entityBatches = FileHelper.BatchReadCsv<TCreateRequestDTO>(file);
                 foreach (var batch in entityBatches)
                 {
                     var tasks = batch.Select(api);

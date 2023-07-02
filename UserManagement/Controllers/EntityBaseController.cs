@@ -7,7 +7,7 @@ namespace UserManagement.Controllers;
 
 [ApiController]
 [Route("[controller]")]
-public class EntityBaseController<TCreateRequestDTO, TResponseDTO> : ControllerBase where TResponseDTO : class
+public class EntityBaseController<TCreateRequestDTO, TResponseDTO> : ControllerBase where TResponseDTO : class, IIdEntityDto
 {
     protected readonly ILogger<EntityBaseController<TCreateRequestDTO, TResponseDTO>> Logger;
     protected readonly IEntityService<TCreateRequestDTO, TResponseDTO> Service;
@@ -65,10 +65,10 @@ public class EntityBaseController<TCreateRequestDTO, TResponseDTO> : ControllerB
 
     [HttpPost(nameof(Bulk))]
     [SwaggerOperation(Summary = "Bulk Operation on Items")]
-    public virtual async Task<IActionResult> Bulk([FromBody] BulkOperationRequest bulkOperationRequest)
+    public virtual async Task<IActionResult> Bulk([FromQuery] OperationType operationType, IFormFile file)
     {
-        Logger.LogInformation("{methodName} {operationType} invoked", nameof(Bulk), bulkOperationRequest.OperationType);
-        var bulkOperationResponse = await Service.Bulk(bulkOperationRequest);
+        Logger.LogInformation("{methodName} {operationType} invoked", nameof(Bulk), operationType);
+        var bulkOperationResponse = await Service.Bulk(operationType, file);
         return ToIActionResult(bulkOperationResponse);
     }
 

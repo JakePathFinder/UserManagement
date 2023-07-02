@@ -1,8 +1,6 @@
-﻿using Microsoft.AspNetCore.Mvc;
-
-namespace UserManagement.DTO
+﻿namespace UserManagement.DTO
 {
-    public class BulkOperationResponse<TResponseDTO>
+    public class BulkOperationResponse<TResponseDTO> where TResponseDTO: class, IIdEntityDto
     {
         public List<TResponseDTO> Items { get; set; }
         public List<Guid> FailedIds { get; set; }
@@ -20,8 +18,7 @@ namespace UserManagement.DTO
             TotalRequests = TotalSucceededRequests = TotalFailedRequests = 0;
         }
 
-        public static BulkOperationResponse<TResponseDTO> From<TResponseDTO>(List<Response<TResponseDTO>> responses)
-            where TResponseDTO : class, IIdEntityDto
+        public static BulkOperationResponse<TResponseDTO> From(List<Response<TResponseDTO>> responses)
         {
             var bulkResponse = new BulkOperationResponse<TResponseDTO>();
             responses.ForEach(response =>
