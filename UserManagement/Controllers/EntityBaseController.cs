@@ -20,38 +20,38 @@ public class EntityBaseController<TCreateRequestDTO, TResponseDTO> : ControllerB
     
     [HttpGet($"{{{nameof(id)}}}")]
     [SwaggerOperation(Summary = "Retrieves an item by id")]
-    public virtual async Task<Response<TResponseDTO>> GetByIdAsync([FromRoute] Guid id)
+    public virtual async Task<IActionResult> GetByIdAsync([FromRoute] Guid id)
     {
         Logger.LogInformation("{methodName} invoked with {id}", nameof(GetByIdAsync), id);
-        var result = await Service.GetByIdAsync(id);
-        return result;
+        var response = await Service.GetByIdAsync(id);
+        return ToIActionResult(response);
     }
     
     [HttpGet]
     [SwaggerOperation(Summary = "Retrieves all items")]
-    public virtual async Task<IEnumerable<TResponseDTO>> GetAllAsync()
+    public virtual async Task<IActionResult> GetAllAsync()
     {
         Logger.LogInformation("{methodName} invoked", nameof(GetByIdAsync));
-        var result = await Service.GetAllAsync();
-        return result;
+        var responses = await Service.GetAllAsync();
+        return ToIActionResult(responses);
     }
 	
 	[HttpPost]
     [SwaggerOperation(Summary = "Creates a new item")]
-    public virtual async Task<Response<TResponseDTO>> CreateAsync([FromBody] TCreateRequestDTO entity)
+    public virtual async Task<IActionResult> CreateAsync([FromBody] TCreateRequestDTO entity)
     {
         Logger.LogInformation("{methodName} invoked", nameof(GetByIdAsync));
-        var result = await Service.CreateAsync(entity);
-        return result;
+        var response = await Service.CreateAsync(entity);
+        return ToIActionResult(response);
     }
     
     [HttpPut($"{{{nameof(id)}}}")]
     [SwaggerOperation(Summary = "Updates an existing item")]
-    public virtual async Task<Response<TResponseDTO>> UpdateAsync([FromRoute] Guid id, [FromBody] TCreateRequestDTO entity)
+    public virtual async Task<IActionResult> UpdateAsync([FromRoute] Guid id, [FromBody] TCreateRequestDTO entity)
     {
         Logger.LogInformation("{methodName} invoked with {id}", nameof(GetByIdAsync), id);
-        var result = await Service.UpdateAsync(id, entity);
-        return result;
+        var response = await Service.UpdateAsync(id, entity);
+        return ToIActionResult(response);
     }
 
     [HttpDelete($"{{{nameof(id)}}}")]
@@ -59,16 +59,26 @@ public class EntityBaseController<TCreateRequestDTO, TResponseDTO> : ControllerB
     public virtual async Task<IActionResult> DeleteByIdAsync([FromRoute] Guid id)
     {
         Logger.LogInformation("{methodName} invoked with {id}", nameof(GetByIdAsync), id);
-        var result = await Service.DeleteAsync(id);
-        return result.Success ? Ok($"{id} Deleted Successfully") : BadRequest($"Failed Deleting {id}");
+        var response = await Service.DeleteAsync(id);
+        return ToIActionResult(response);
     }
 
-    /*[HttpPost(nameof(Bulk))]
+    [HttpPost(nameof(Bulk))]
     [SwaggerOperation(Summary = "Bulk Operation on Items")]
     public virtual async Task<IActionResult> Bulk([FromBody] BulkOperationRequest bulkOperationRequest)
     {
         Logger.LogInformation("{methodName} {operationType} invoked", nameof(Bulk), bulkOperationRequest.OperationType);
-        var result = await Service.DeleteByIdAsync(id);
-        return result ? Ok($"{id} Deleted Successfully") : BadRequest($"Failed Deleting {id}");
-    }*/
+        var bulkOperationResponse = await Service.Bulk(bulkOperationRequest);
+        return ToIActionResult(bulkOperationResponse);
+    }
+
+    private IActionResult ToIActionResult(Response<TResponseDTO> response)
+    {
+        return response.Success ? Ok(response) : BadRequest(response);
+    }
+
+    private IActionResult ToIActionResult(BulkOperationResponse<TResponseDTO> bulkOperationResponse)
+    {
+        return bulkOperationResponse.Success() ? Ok(bulkOperationResponse) : BadRequest(bulkOperationResponse);
+    }
 }

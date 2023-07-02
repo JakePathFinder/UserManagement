@@ -36,17 +36,18 @@ namespace UserManagement.Services
             }
         }
 
-        public virtual async Task<IList<TResponseDTO>> GetAllAsync()
+        public virtual async Task<BulkOperationResponse<TResponseDTO>> GetAllAsync()
         {
             try
             {
                 var results = await Repo.GetAllAsync();
-                var mapped = Mapper.Map<List<TResponseDTO>>(results);
-                return mapped;
+                var mappedResponses = Mapper.Map<List<TResponseDTO>>(results);
+                return BulkOperationResponse<TResponseDTO>.From(mappedResponses);
             }
             catch (Exception ex)
             {
-                throw new Exception($"Failed Getting all entities: {ex.Message}");
+                var exception = new Exception($"Failed Getting all entities: {ex.Message}");
+                return BulkOperationResponse<TResponseDTO>.From(exception);
             }
         }
 		
@@ -104,22 +105,27 @@ namespace UserManagement.Services
             }
         }
 
-        public async Task<BulkOperationResponse> Bulk(BulkOperationRequest bulkOperationRequest, string inputFile)
+        public async Task<BulkOperationResponse<TResponseDTO>> Bulk(BulkOperationRequest bulkOperationRequest)
         {
             var responses = new List<Response<TResponseDTO>>();
-            var api = GetMatchingApi(bulkOperationRequest.OperationType);
-
-            var entityBatches = FileHelper.BatchReadCsv<TCreateRequestDTO>(inputFile);
             
-
-            foreach (var batch in entityBatches)
+            try
             {
-                var tasks = batch.Select(api);
-                var results = await Task.WhenAll(tasks);
-                responses.AddRange(results);
+                var api = GetMatchingApi(bulkOperationRequest.OperationType);
+                var entityBatches = FileHelper.BatchReadCsv<TCreateRequestDTO>(bulkOperationRequest.InputFile);
+                foreach (var batch in entityBatches)
+                {
+                    var tasks = batch.Select(api);
+                    var results = await Task.WhenAll(tasks);
+                    responses.AddRange(results);
+                }
+            }
+            catch (Exception ex)
+            {
+                return BulkOperationResponse<TResponseDTO>.From(ex);
             }
 
-            var bulkOperationResponse = BulkOperationResponse.From(responses);
+            var bulkOperationResponse = BulkOperationResponse<TResponseDTO>.From(responses);
             return bulkOperationResponse;
         }
 

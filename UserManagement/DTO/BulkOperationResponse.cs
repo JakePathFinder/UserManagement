@@ -1,10 +1,12 @@
-﻿namespace UserManagement.DTO
+﻿using Microsoft.AspNetCore.Mvc;
+
+namespace UserManagement.DTO
 {
-    public class BulkOperationResponse
+    public class BulkOperationResponse<TResponseDTO>
     {
+        public List<TResponseDTO> Items { get; set; }
+        public List<Guid> FailedIds { get; set; }
         public List<string> Errors { get; set; }
-        public List<Guid> Succeeded { get; set; } 
-        public List<Guid> Failed { get; set; }
 
         public int TotalRequests { get; set; }
         public int TotalSucceededRequests { get; set; }
@@ -13,14 +15,15 @@
         public BulkOperationResponse()
         {
             Errors = new List<string>();
-            Succeeded = new List<Guid>();
-            Failed = new List<Guid>();
+            Items = new List<TResponseDTO>();
+            FailedIds = new List<Guid>();
             TotalRequests = TotalSucceededRequests = TotalFailedRequests = 0;
         }
 
-        public static BulkOperationResponse From<TResponseDTO>(List<Response<TResponseDTO>> responses) where TResponseDTO : class, IIdEntityDto
+        public static BulkOperationResponse<TResponseDTO> From<TResponseDTO>(List<Response<TResponseDTO>> responses)
+            where TResponseDTO : class, IIdEntityDto
         {
-            var bulkResponse = new BulkOperationResponse();
+            var bulkResponse = new BulkOperationResponse<TResponseDTO>();
             responses.ForEach(response =>
             {
                 bulkResponse.TotalRequests += 1;
@@ -29,20 +32,50 @@
                     bulkResponse.TotalSucceededRequests += 1;
                     if (response.Result != null)
                     {
-                        bulkResponse.Succeeded.Add(response.Result.Id);
+                        bulkResponse.Items.Add(response.Result);
                     }
                 }
                 else
                 {
                     bulkResponse.TotalFailedRequests += 1;
-                    bulkResponse.Errors.Add(response.Message);
-                    if (response.Result != null)
+                    if (response.Message != null)
                     {
-                        bulkResponse.Failed.Add(response.Result.Id);
+                        bulkResponse.Errors.Add(response.Message);
+                    }
+
+                    if (response?.Result?.Id != null)
+                    {
+                        bulkResponse.FailedIds.Add(response.Result.Id);
                     }
                 }
             });
             return bulkResponse;
+        }
+
+        public static BulkOperationResponse<TResponseDTO> From(Exception ex)
+        {
+            var error = $"Bulk operation Failed due to: {ex.Message}";
+            return new BulkOperationResponse<TResponseDTO>()
+            {
+                Errors = new List<string> { error },
+                TotalFailedRequests = 1,
+                TotalRequests = 1
+            };
+        }
+
+        public static BulkOperationResponse<TResponseDTO> From(List<TResponseDTO> entities)
+        {
+            return new BulkOperationResponse<TResponseDTO>()
+            {
+                TotalSucceededRequests = entities.Count,
+                TotalRequests = entities.Count,
+                Items = entities
+            };
+        }
+
+        public bool Success()
+        {
+            return !Errors.Any();
         }
     }
 }
