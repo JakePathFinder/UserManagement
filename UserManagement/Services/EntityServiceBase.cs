@@ -72,16 +72,26 @@ namespace UserManagement.Services
         {
             entity.Id = id;
 
+            return await UpdateAsync(entity);
+        }
+
+        private async Task<Response<TResponseDTO>> UpdateAsync(TCreateRequestDTO entity)
+        {
             try
             {
                 var mapped = Mapper.Map<TModel>(entity);
                 var result = await Repo.UpdateAsync(mapped);
-                return Response<TResponseDTO>.From(result, $"Updated {id} successfully");
+                return Response<TResponseDTO>.From(result, $"Updated {entity.Id} successfully");
             }
             catch (Exception ex)
             {
                 return Response<TResponseDTO>.From(ex, $"Failed Updating {entity.Id}: {ex.Message}");
             }
+        }
+
+        private async Task<Response<TResponseDTO>> DeleteAsync(TCreateRequestDTO entity)
+        {
+            return await DeleteAsync(entity.Id);
         }
 
         public virtual async Task<Response<TResponseDTO>> DeleteAsync(Guid id)
@@ -95,25 +105,50 @@ namespace UserManagement.Services
             {
                 return Response<TResponseDTO>.From(ex, $"Failed Deleting {id}: {ex.Message}"); ;
             }
-
         }
 
         public async Task<BulkOperationResponse> Bulk(BulkOperationRequest bulkOperationRequest, string inputFile)
         {
-            ValidateRequestType(bulkOperationRequest.OperationType);
             var entities = ReadEntitiesFromFile(inputFile);
 
-            var responses = bulkOperationRequest.OperationType switch
-            {
-                OperationType.Create => await BulkCreate(entities),
-                OperationType.Update => await BulkUpdate(entities),
-                OperationType.Delete => await BulkDelete(entities),
-                _ => throw new InvalidOperationException($"Invalid operation {bulkOperationRequest.OperationType}")
-            };
+            var responses = await BulkDo(bulkOperationRequest.OperationType, entities);
             return BulkOperationResponse.From(responses);
         }
 
-        public static List<List<TCreateRequestDTO>> Batch(List<TCreateRequestDTO> source, int batchSize = ServiceConstants.BulkOperationsBatchSize)
+        
+
+        private async Task<List<Response<TResponseDTO>>> BulkDo(OperationType opType, List<TCreateRequestDTO> entities)
+        {
+            var response = new List<Response<TResponseDTO>>();
+
+            var api = GetMatchingApi(opType);
+
+            var batches = Batch(entities);
+
+            foreach (var batch in batches)
+            {
+                var tasks = batch.Select(api);
+                var results = await Task.WhenAll(tasks);
+                response.AddRange(results);
+            }
+
+            return response;
+        }
+
+        private Func<TCreateRequestDTO, Task<Response<TResponseDTO>>> GetMatchingApi(OperationType opType)
+        {
+            Func<TCreateRequestDTO, Task<Response<TResponseDTO>>> operation = opType switch
+            {
+                OperationType.Create => CreateAsync,
+                OperationType.Update => UpdateAsync,
+                OperationType.Delete => DeleteAsync,
+                _ => throw new InvalidOperationException($"Invalid operation {opType}")
+            };
+
+            return operation;
+        }
+
+        private static List<List<TCreateRequestDTO>> Batch(List<TCreateRequestDTO> source, int batchSize = ServiceConstants.BulkOperationsBatchSize)
         {
             var batches = new List<List<TCreateRequestDTO>>();
 
@@ -125,57 +160,7 @@ namespace UserManagement.Services
             return batches;
         }
 
-        private async Task<List<Response<TResponseDTO>>> BulkCreate(List<TCreateRequestDTO> entities)
-        {
-            var response = new List<Response<TResponseDTO>>();
-            var batches = Batch(entities);
-            foreach (var batch in batches)
-            {
-                var tasks = batch.Select(CreateAsync);
-                var results = await Task.WhenAll(tasks);
-                response.AddRange(results);
-            }
-
-            return response;
-        }
-
-
-        private async Task<List<Response<TResponseDTO>>> BulkUpdate(List<TCreateRequestDTO> entities)
-        {
-            var response = new List<Response<TResponseDTO>>();
-            var batches = Batch(entities);
-            foreach (var batch in batches)
-            {
-                var tasks = batch.Select(e => UpdateAsync(e.Id, e));
-                var results = await Task.WhenAll(tasks);
-                response.AddRange(results);
-            }
-
-            return response;
-        }
-
-          
-
-        private async Task<List<Response<TResponseDTO>>> BulkDelete(List<TCreateRequestDTO> entities)
-        {
-            var response = new List<Response<TResponseDTO>>();
-            var batches = Batch(entities);
-            foreach (var batch in batches)
-            {
-                var tasks = batch.Select(e => DeleteAsync(e.Id));
-                var results = await Task.WhenAll(tasks);
-                response.AddRange(results);
-            }
-
-            return response;
-        }
-
-        private List<TCreateRequestDTO> ReadEntitiesFromFile(string inputFile)
-        {
-            throw new NotImplementedException();
-        }
-
-        private void ValidateRequestType(OperationType operationType)
+        private static List<TCreateRequestDTO> ReadEntitiesFromFile(string inputFile)
         {
             throw new NotImplementedException();
         }
