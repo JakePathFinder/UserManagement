@@ -23,7 +23,7 @@ namespace UserManagement.Services
             Logger = logger;
         }
 
-        public virtual async Task<Response<TResponseDTO>> GetByIdAsync(Guid id)
+        public virtual async Task<Response<TResponseDTO>> GetByIdAsync(int id)
         {
             try 
             {
@@ -68,7 +68,7 @@ namespace UserManagement.Services
             }
         }
 
-        public virtual async Task<Response<TResponseDTO>> UpdateAsync(Guid id, TCreateRequestDTO entity)
+        public virtual async Task<Response<TResponseDTO>> UpdateAsync(int id, TCreateRequestDTO entity)
         {
             entity.Id = id;
 
@@ -102,7 +102,7 @@ namespace UserManagement.Services
             return await DeleteAsync(entity.Id);
         }
 
-        public virtual async Task<Response<TResponseDTO>> DeleteAsync(Guid id)
+        public virtual async Task<Response<TResponseDTO>> DeleteAsync(int id)
         {
             try
             {

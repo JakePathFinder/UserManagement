@@ -5,6 +5,6 @@ namespace UserManagement.DTO
 {
     public interface IIdEntityDto
     {
-        Guid Id { get; set; }
+        int Id { get; set; }
     }
 }

@@ -58,7 +58,7 @@ namespace UserManagement.Repos
             }
         }
 
-        public virtual async Task<bool> DeleteByIdAsync(Guid id)
+        public virtual async Task<bool> DeleteByIdAsync(int id)
         {
             try
             {
@@ -91,7 +91,7 @@ namespace UserManagement.Repos
             }
         }
 
-        public virtual async Task<T> GetByIdAsync(Guid id)
+        public virtual async Task<T> GetByIdAsync(int id)
         {
             try
             {

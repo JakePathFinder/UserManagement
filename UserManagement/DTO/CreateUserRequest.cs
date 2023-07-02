@@ -5,7 +5,7 @@ namespace UserManagement.DTO
 {
     public class CreateUserRequest : IIdEntityDto
     {
-        public Guid Id { get; set; }
+        public int Id { get; set; }
         
         [StringLength(ValidationConstants.InputStringLength, ErrorMessage = ValidationConstants.InputStringLengthErrorMessage)]
         [RegularExpression(ValidationConstants.NameValidationRegex, ErrorMessage = ValidationConstants.NameInputStringErrorMessage)]

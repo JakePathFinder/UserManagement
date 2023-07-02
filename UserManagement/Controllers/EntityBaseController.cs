@@ -20,7 +20,7 @@ public class EntityBaseController<TCreateRequestDTO, TResponseDTO> : ControllerB
     
     [HttpGet($"{{{nameof(id)}}}")]
     [SwaggerOperation(Summary = "Retrieves an item by id")]
-    public virtual async Task<IActionResult> GetByIdAsync([FromRoute] Guid id)
+    public virtual async Task<IActionResult> GetByIdAsync([FromRoute] int id)
     {
         Logger.LogInformation("{methodName} invoked with {id}", nameof(GetByIdAsync), id);
         var response = await Service.GetByIdAsync(id);
@@ -47,7 +47,7 @@ public class EntityBaseController<TCreateRequestDTO, TResponseDTO> : ControllerB
     
     [HttpPut($"{{{nameof(id)}}}")]
     [SwaggerOperation(Summary = "Updates an existing item")]
-    public virtual async Task<IActionResult> UpdateAsync([FromRoute] Guid id, [FromBody] TCreateRequestDTO entity)
+    public virtual async Task<IActionResult> UpdateAsync([FromRoute] int id, [FromBody] TCreateRequestDTO entity)
     {
         Logger.LogInformation("{methodName} invoked with {id}", nameof(GetByIdAsync), id);
         var response = await Service.UpdateAsync(id, entity);
@@ -56,7 +56,7 @@ public class EntityBaseController<TCreateRequestDTO, TResponseDTO> : ControllerB
 
     [HttpDelete($"{{{nameof(id)}}}")]
     [SwaggerOperation(Summary = "Deletes an item")]
-    public virtual async Task<IActionResult> DeleteByIdAsync([FromRoute] Guid id)
+    public virtual async Task<IActionResult> DeleteByIdAsync([FromRoute] int id)
     {
         Logger.LogInformation("{methodName} invoked with {id}", nameof(GetByIdAsync), id);
         var response = await Service.DeleteAsync(id);

@@ -7,8 +7,7 @@ namespace UserManagement.Mapping
     {
         public EntityMappingProfile()
         {
-            CreateMap<DTO.CreateUserRequest, Model.User>()
-                .ForMember(dest => dest.Id, opt => opt.MapFrom(src =>  src.Id == Guid.Empty ? Guid.NewGuid() : src.Id));
+            CreateMap<DTO.CreateUserRequest, Model.User>();
             CreateMap<Model.User, DTO.UserResponse>();
         }
         

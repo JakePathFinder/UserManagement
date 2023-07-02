@@ -3,7 +3,7 @@
     public class BulkOperationResponse<TResponseDTO> where TResponseDTO: class, IIdEntityDto
     {
         public List<TResponseDTO> Items { get; set; }
-        public List<Guid> FailedIds { get; set; }
+        public List<int> FailedIds { get; set; }
         public List<string> Errors { get; set; }
 
         public int TotalRequests { get; set; }
@@ -14,7 +14,7 @@
         {
             Errors = new List<string>();
             Items = new List<TResponseDTO>();
-            FailedIds = new List<Guid>();
+            FailedIds = new List<int>();
             TotalRequests = TotalSucceededRequests = TotalFailedRequests = 0;
         }
 
