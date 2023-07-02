@@ -3,7 +3,7 @@ using UserManagement.Const;
 
 namespace UserManagement.DTO
 {
-    public class CreateUserRequest
+    public class CreateUserRequest : ICreateRequest
     {
         public Guid Id { get; set; }
         

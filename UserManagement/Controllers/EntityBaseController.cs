@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Mvc;
 using Swashbuckle.AspNetCore.Annotations;
+using UserManagement.DTO;
 using UserManagement.Services.Interfaces;
 
 namespace UserManagement.Controllers;
@@ -58,7 +59,16 @@ public class EntityBaseController<TCreateRequestDTO, TResponseDTO> : ControllerB
     public virtual async Task<IActionResult> DeleteByIdAsync([FromRoute] Guid id)
     {
         Logger.LogInformation("{methodName} invoked with {id}", nameof(GetByIdAsync), id);
-        var result = await Service.DeleteByIdAsync(id);
+        var result = await Service.DeleteAsync(id);
+        return result ? Ok($"{id} Deleted Successfully") : BadRequest($"Failed Deleting {id}");
+    }
+
+    [HttpPost(nameof(Bulk))]
+    [SwaggerOperation(Summary = "Bulk Operation on Items")]
+    public virtual async Task<IActionResult> Bulk([FromBody] BulkOperationRequest bulkOperationRequest)
+    {
+        Logger.LogInformation("{methodName} {operationType} invoked", nameof(Bulk), bulkOperationRequest.OperationType);
+        var result = await Service.DeleteAsync(id);
         return result ? Ok($"{id} Deleted Successfully") : BadRequest($"Failed Deleting {id}");
     }
 }
