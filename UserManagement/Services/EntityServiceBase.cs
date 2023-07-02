@@ -1,10 +1,9 @@
 ﻿using AutoMapper;
-using MySqlX.XDevAPI.Common;
 using UserManagement.Const;
 using UserManagement.DTO;
-using UserManagement.Model;
 using UserManagement.Repos.Interfaces;
 using UserManagement.Services.Interfaces;
+using UserManagement.Utilities;
 using static Dapper.SqlMapper;
 
 namespace UserManagement.Services
@@ -109,31 +108,23 @@ namespace UserManagement.Services
 
         public async Task<BulkOperationResponse> Bulk(BulkOperationRequest bulkOperationRequest, string inputFile)
         {
-            var entities = ReadEntitiesFromFile(inputFile);
+            var responses = new List<Response<TResponseDTO>>();
+            var api = GetMatchingApi(bulkOperationRequest.OperationType);
 
-            var responses = await BulkDo(bulkOperationRequest.OperationType, entities);
-            return BulkOperationResponse.From(responses);
-        }
+            var entityBatches = FileHelper.BatchReadCsv<TCreateRequestDTO>(inputFile);
+            
 
-        
-
-        private async Task<List<Response<TResponseDTO>>> BulkDo(OperationType opType, List<TCreateRequestDTO> entities)
-        {
-            var response = new List<Response<TResponseDTO>>();
-
-            var api = GetMatchingApi(opType);
-
-            var batches = Batch(entities);
-
-            foreach (var batch in batches)
+            foreach (var batch in entityBatches)
             {
                 var tasks = batch.Select(api);
                 var results = await Task.WhenAll(tasks);
-                response.AddRange(results);
+                responses.AddRange(results);
             }
 
-            return response;
+            var bulkOperationResponse = BulkOperationResponse.From(responses);
+            return bulkOperationResponse;
         }
+
 
         private Func<TCreateRequestDTO, Task<Response<TResponseDTO>>> GetMatchingApi(OperationType opType)
         {
@@ -148,21 +139,5 @@ namespace UserManagement.Services
             return operation;
         }
 
-        private static List<List<TCreateRequestDTO>> Batch(List<TCreateRequestDTO> source, int batchSize = ServiceConstants.BulkOperationsBatchSize)
-        {
-            var batches = new List<List<TCreateRequestDTO>>();
-
-            for (var i = 0; i < source.Count; i += batchSize)
-            {
-                batches.Add(source.Skip(i).Take(batchSize).ToList());
-            }
-
-            return batches;
-        }
-
-        private static List<TCreateRequestDTO> ReadEntitiesFromFile(string inputFile)
-        {
-            throw new NotImplementedException();
-        }
     }
 }
