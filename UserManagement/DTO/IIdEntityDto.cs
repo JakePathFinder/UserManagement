@@ -3,7 +3,7 @@ using UserManagement.Const;
 
 namespace UserManagement.DTO
 {
-    public interface ICreateRequest
+    public interface IIdEntityDto
     {
         Guid Id { get; set; }
     }

@@ -2,13 +2,14 @@
 
 namespace UserManagement.Services.Interfaces
 {
-    public interface IEntityService<TCreateRequest, TResponseDTO>
+    public interface IEntityService<TCreateRequest, TResponseDTO> where TResponseDTO: class
     {
-        Task<TResponseDTO> GetByIdAsync(Guid id);
+        Task<Response<TResponseDTO>> GetByIdAsync(Guid id);
         Task<IList<TResponseDTO>> GetAllAsync();
-        Task<TResponseDTO> CreateAsync(TCreateRequest entity);
-        Task<bool> UpdateAsync(Guid id, TCreateRequest entity);
-        Task<bool> DeleteAsync(Guid id);
-        Task<bool> Bulk(BulkOperationRequest bulkOperationRequest);
+        Task<Response<TResponseDTO>> CreateAsync(TCreateRequest entity);
+        Task<Response<TResponseDTO>> UpdateAsync(Guid id, TCreateRequest entity);
+        Task<Response<TResponseDTO>> DeleteAsync(Guid id);
+        //Task<BulkOperationResponse> Bulk(BulkOperationRequest id);
+
     }
 }
