@@ -1,5 +1,4 @@
 ﻿using AutoMapper;
-using UserManagement.Const;
 using UserManagement.DTO;
 using UserManagement.Repos.Interfaces;
 using UserManagement.Services.Interfaces;
@@ -15,7 +14,6 @@ namespace UserManagement.Services
         protected readonly IMapper Mapper;
         protected readonly IEntityRepo<TModel> Repo;
         protected readonly ILogger<EntityServiceBase<TCreateRequestDTO, TResponseDTO, TModel>> Logger;
-        private const int BatchSize = ServiceConstants.BulkOperationsBatchSize;
         protected EntityServiceBase(IEntityRepo<TModel> entityRepo, IMapper mapper, ILogger<EntityServiceBase<TCreateRequestDTO, TResponseDTO, TModel>> logger)
         {
             Repo = entityRepo;

@@ -15,7 +15,7 @@ namespace UserManagement.Services
             _securityService = securityService;
         }
 
-        public override async Task<UserResponse> CreateAsync(CreateUserRequest entity)
+        public override async Task<Response<UserResponse>> CreateAsync(CreateUserRequest entity)
         {
             entity.Password = _securityService.HashSaltPassword(entity.Password);
             return await base.CreateAsync(entity);

@@ -1,6 +1,6 @@
 ﻿namespace UserManagement.DTO
 {
-    public class UserResponse
+    public class UserResponse : IIdEntityDto
     {
         public required Guid Id { get; set; }
         public required string Name { get; set; }
