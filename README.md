@@ -2,6 +2,29 @@
 
 The User management solution provides APIs for managing users.
 The solution contains a docker-compose.yml file that pulls and populates a mysql db
+![image](https://github.com/JakePathFinder/UserManagement/assets/59265424/6ab196c0-872d-4b66-acec-3a29421640f9)
+Controllers -> Contain the User Controller and the BaseEntityController -> For Future Expansion
+![image](https://github.com/JakePathFinder/UserManagement/assets/59265424/1e61d778-6c95-4d8d-aca4-6dda44a94353)
+
+Services -> Contain the User Service, the BaseEntityService (For Future Expansion)
+As well as the SecurityService, used for hashing and salting the password
+![image](https://github.com/JakePathFinder/UserManagement/assets/59265424/57caed3b-90ca-4e6d-b01f-c580c0a7a6f3)
+
+Repos -> Used for data persistancy. Contain a DAL interface implemented using the MySqlRepoBase (Also used for future expansion)
+Contains the UserRepo
+![image](https://github.com/JakePathFinder/UserManagement/assets/59265424/2b891b99-7bfe-4a6a-94e9-1c1673b73099)
+
+Additional Folders:
+DTO -> Data Transfer objects
+Model -> Contains the domain models, decoupled from the API requests\responses
+Example usage: The DTO.CreateUserRequest gets a password, Maps to Model.User for saving
+  The retrieved response is than mapped to a DTO.USerResponse which is returned to the user (without the password for security)
+Mapping -> Mapping Data
+Middleware -> Additional middleware to Log Incoming\Outgoing requests
+CFG -> Configuration representation
+Const -> Constants
+Scripts -> Additional scripts such as creating the DB (loaded automatically using docker-compose)
+Utilities -> Additional utilities, currently storing FileHelper, used to read the .csv file in batches
 
 Upon running The followinf Swagger API shall be opened via the browser:
 ![image](https://github.com/JakePathFinder/UserManagement/assets/59265424/03e81449-3952-42bc-be18-65c2688a1c48)
