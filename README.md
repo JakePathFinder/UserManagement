@@ -10,7 +10,8 @@ Services -> Contain the User Service, the BaseEntityService (For Future Expansio
 As well as the SecurityService, used for hashing and salting the password
 ![image](https://github.com/JakePathFinder/UserManagement/assets/59265424/57caed3b-90ca-4e6d-b01f-c580c0a7a6f3)
 
-Repos -> Used for data persistancy. Contain a DAL interface implemented using the MySqlRepoBase (Also used for future expansion)
+Repos -> Used for data persistancy. 
+Contain a DAL interface implemented using the MySqlRepoBase (Also used for future expansion)
 Contains the UserRepo
 ![image](https://github.com/JakePathFinder/UserManagement/assets/59265424/2b891b99-7bfe-4a6a-94e9-1c1673b73099)
 
